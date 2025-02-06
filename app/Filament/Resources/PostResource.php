@@ -40,7 +40,7 @@ class PostResource extends Resource
         return $form
             ->schema([
 
-                Section::make('Create a Post')
+                Section::make(fn ($record) => $record ? 'Update Post' : 'Create a Post')
                     ->description('Create a new post')
                     ->schema([
                         TextInput::make('title')
