@@ -11,7 +11,9 @@ use Filament\Forms;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Group;
 use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Form;
@@ -37,40 +39,59 @@ class PostResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('title')
-                    ->label('Title')
-                    ->required()
-                    ->placeholder('Post Title'),
-                TextInput::make('slug')
-                    ->label('Slug')
-                    ->required()
-                    ->placeholder('post-title'),
-                Select::make('category_id')
-                    ->label('Category')
-                    ->options(
-                        fn() => \App\Models\Category::pluck('name', 'id')
-                    )
-                    ->required(),
-                ColorPicker::make('color')
-                    ->label('Color')
-                    ->required()
-                    ->default('#000000'),
-                FileUpload::make('thumbnail')
-                    ->label('Thumbnail')
-                    ->disk('public')
-                    ->directory('thumbnails'),
-                MarkdownEditor::make('content')
-                    ->label('Content')
-                    ->required()
-                    ->placeholder('Post Content'),
-                TagsInput::make('tags')
-                    ->label('Tags')
-                    ->placeholder('tag1, tag2, tag3'),
-                Checkbox::make('published')
-                    ->required()
-                    ->label('Published'),
 
-            ]);
+                Section::make('Create a Post')
+                    ->description('Create a new post')
+                    ->schema([
+                        TextInput::make('title')
+                            ->label('Title')
+                            ->required()
+                            ->placeholder('Post Title'),
+                        TextInput::make('slug')
+                            ->label('Slug')
+                            ->required()
+                            ->placeholder('post-title'),
+                        Select::make('category_id')
+                            ->label('Category')
+                            ->options(
+                                fn() => \App\Models\Category::pluck('name', 'id')
+                            )
+                            ->required(),
+                        ColorPicker::make('color')
+                            ->label('Color')
+                            ->required()
+                            ->default('#000000'),
+                        MarkdownEditor::make('content')
+                            ->label('Content')
+                            ->required()
+                            ->placeholder('Post Content')
+                            ->columnSpanFull(),
+                    ])->columnSpan(2)->columns(2),
+
+                Group::make([
+                    Section::make('Post Image')
+                        ->description('Add Image to your post')
+                        ->collapsed()
+                        ->schema([
+                            FileUpload::make('thumbnail')
+                                ->label('Thumbnail')
+                                ->disk('public')
+                                ->directory('thumbnails'),
+                        ])->columnSpan(1),
+                    Section::make('Meta')
+                        ->description('Add some meta information to your post')
+                        ->schema([
+                            TagsInput::make('tags')
+                                ->label('Tags')
+                                ->placeholder('tag1, tag2, tag3'),
+                            Checkbox::make('published')
+                                ->required()
+                                ->label('Published'),
+                        ])->columnSpan(1),
+
+                ]),
+
+            ])->columns(3);
     }
 
     public static function table(Table $table): Table
