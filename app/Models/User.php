@@ -45,4 +45,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    function posts()
+    {
+        return $this->belongsToMany(Post::class, 'post_user')->withTimestamps();
+    }
 }
