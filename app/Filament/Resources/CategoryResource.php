@@ -32,6 +32,7 @@ class CategoryResource extends Resource
                 TextInput::make('slug')
                     ->label('Slug')
                     ->required()
+                    ->unique()
                     ->placeholder('category-name'),
             ]);
     }

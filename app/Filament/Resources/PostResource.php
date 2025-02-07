@@ -5,8 +5,10 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PostResource\Pages;
 use App\Filament\Resources\PostResource\RelationManagers;
 use App\Models\Post;
+use Doctrine\DBAL\Platforms\MySQL\DefaultTableOptions;
 use Faker\Core\Color;
 use Faker\Core\File;
+use Faker\Provider\ar_EG\Text;
 use Filament\Forms;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\ColorPicker;
@@ -15,6 +17,7 @@ use Filament\Forms\Components\Group;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Form;
 use Filament\Forms\Components\TextInput;
@@ -40,8 +43,8 @@ class PostResource extends Resource
         return $form
             ->schema([
 
-                Section::make(fn ($record) => $record ? 'Update Post' : 'Create a Post')
-                    ->description('Create a new post')
+                Section::make(fn($record) => $record ? ($record->exists ? 'Update Post' : 'View Post') : 'Create a Post')
+                    ->description(fn($record) => $record ? ($record->exists ? 'Update the post details' : 'View the post details') : 'Create a new post')
                     ->schema([
                         TextInput::make('title')
                             ->label('Title')
@@ -50,12 +53,11 @@ class PostResource extends Resource
                         TextInput::make('slug')
                             ->label('Slug')
                             ->required()
+                            ->unique(ignoreRecord: true)
                             ->placeholder('post-title'),
                         Select::make('category_id')
                             ->label('Category')
-                            ->options(
-                                fn() => \App\Models\Category::pluck('name', 'id')
-                            )
+                            ->relationship('category', 'name')
                             ->required(),
                         ColorPicker::make('color')
                             ->label('Color')
@@ -69,8 +71,8 @@ class PostResource extends Resource
                     ])->columnSpan(2)->columns(2),
 
                 Group::make([
-                    Section::make('Post Image')
-                        ->description('Add Image to your post')
+                    Section::make(fn($record) => $record ? ($record->exists ? 'Edit Post Thumbnail' : 'View Post Thumbnail') : 'Add Post Thumbnail')
+                        ->description(fn($record) => $record ? ($record->exists ? 'Edit the thumbnail image of your post' : 'View the thumbnail image of your post') : 'Add a thumbnail image to your post')
                         ->collapsed()
                         ->schema([
                             FileUpload::make('thumbnail')
@@ -78,8 +80,8 @@ class PostResource extends Resource
                                 ->disk('public')
                                 ->directory('thumbnails'),
                         ])->columnSpan(1),
-                    Section::make('Meta')
-                        ->description('Add some meta information to your post')
+                    Section::make(fn($record) => $record ? ($record->exists ? 'Edit Meta Information' : 'View Meta Information') : 'Add Meta Information')
+                        ->description(fn($record) => $record ? ($record->exists ? 'Edit the meta information of your post' : 'View the meta information of your post') : 'Add some meta information to your post')
                         ->schema([
                             TagsInput::make('tags')
                                 ->label('Tags')
@@ -98,11 +100,13 @@ class PostResource extends Resource
     {
         return $table
             ->columns([
-
-                ImageColumn::make('thumbnail')
-                    ->label('Thumbnail')
+                TextColumn::make('id')
+                    ->label('ID')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                ImageColumn::make('thumbnail')
+                    ->label('Thumbnail'),
                 TextColumn::make('title')
                     ->label('Title')
                     ->searchable()
@@ -110,29 +114,38 @@ class PostResource extends Resource
                 TextColumn::make('slug')
                     ->label('Slug')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 ColorColumn::make('color')
                     ->label('Color')
-                    ->searchable()
-                    ->sortable(),
+                    ->toggleable(),
                 TextColumn::make('category.name')
                     ->label('Category')
                     ->searchable()
+                    ->toggleable()
                     ->sortable(),
                 TextColumn::make('tags')
                     ->label('Tags')
                     ->searchable()
+                    ->toggleable()
                     ->sortable(),
                 CheckboxColumn::make('published')
                     ->label('Published')
                     ->searchable()
+                    ->toggleable()
                     ->sortable(),
+                TextColumn::make('created_at')
+                    ->label('Created At')
+                    ->date()
+                    ->toggleable(),
+
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

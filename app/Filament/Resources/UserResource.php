@@ -33,6 +33,7 @@ class UserResource extends Resource
                 TextInput::make('email')
                     ->label('Email')
                     ->required()
+                    ->unique()
                     ->email()
                     ->placeholder('Email'),
                 TextInput::make('password')
