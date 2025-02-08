@@ -31,6 +31,8 @@ use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use PharIo\Manifest\Author;
@@ -94,14 +96,14 @@ class PostResource extends Resource
                                 ->label('Published'),
                         ])->columnSpan(1),
 
-                // Section::make(fn($record) => $record ? ($record->exists ? 'Edit Author Information' : 'View Author Information') : 'Add Author Information')
-                // ->description(fn($record) => $record ? ($record->exists ? 'Edit the author information of your post' : 'View the author information of your post') : 'Add some author information to your post')
-                // ->schema([
-                //     Select::make('authors')
-                //         ->label('Co Authors')
-                //         ->multiple()
-                //         ->relationship('authors', 'name'),
-                // ])->columnSpan(1),
+                    // Section::make(fn($record) => $record ? ($record->exists ? 'Edit Author Information' : 'View Author Information') : 'Add Author Information')
+                    // ->description(fn($record) => $record ? ($record->exists ? 'Edit the author information of your post' : 'View the author information of your post') : 'Add some author information to your post')
+                    // ->schema([
+                    //     Select::make('authors')
+                    //         ->label('Co Authors')
+                    //         ->multiple()
+                    //         ->relationship('authors', 'name'),
+                    // ])->columnSpan(1),
                 ]),
 
             ])->columns(3);
@@ -152,7 +154,15 @@ class PostResource extends Resource
 
             ])
             ->filters([
-                //
+                TernaryFilter::make('published')
+                    ->label('Published')
+                    ->options([
+                        'Published' => true,
+                        'Not Published' => false,
+                    ]),
+                SelectFilter::make('category_id')
+                    ->label('Category')
+                    ->relationship('category', 'name'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
