@@ -3,14 +3,28 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
+
+    /**
+     * Determine if the given panel can be accessed by the user.
+     *
+     * @param  \Filament\Panel  $panel
+     * @return bool
+     */
+    public function canAccessPanel($panel): bool
+    {
+        return true;
+    }
+
 
     /**
      * The attributes that are mass assignable.
@@ -44,5 +58,15 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    function posts()
+    {
+        return $this->belongsToMany(Post::class, 'post_user')->withPivot(['order'])->withTimestamps();
+    }
+
+    function comments()
+    {
+        return $this->hasMany(Comment::class, 'commentable');
     }
 }
