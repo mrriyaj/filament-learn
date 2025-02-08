@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\CategoryResource\RelationManagers\PostsRelationManager;
+use App\Filament\Resources\PostResource\RelationManagers\AuthorsRelationManager;
 use App\Filament\Resources\PostResource\Pages;
 use App\Filament\Resources\PostResource\RelationManagers;
 use App\Models\Post;
@@ -31,6 +33,7 @@ use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use PharIo\Manifest\Author;
 
 class PostResource extends Resource
 {
@@ -91,14 +94,14 @@ class PostResource extends Resource
                                 ->label('Published'),
                         ])->columnSpan(1),
 
-                Section::make(fn($record) => $record ? ($record->exists ? 'Edit Author Information' : 'View Author Information') : 'Add Author Information')
-                ->description(fn($record) => $record ? ($record->exists ? 'Edit the author information of your post' : 'View the author information of your post') : 'Add some author information to your post')
-                ->schema([
-                    Select::make('authors')
-                        ->label('Co Authors')
-                        ->multiple()
-                        ->relationship('authors', 'name'),
-                ])->columnSpan(1),
+                // Section::make(fn($record) => $record ? ($record->exists ? 'Edit Author Information' : 'View Author Information') : 'Add Author Information')
+                // ->description(fn($record) => $record ? ($record->exists ? 'Edit the author information of your post' : 'View the author information of your post') : 'Add some author information to your post')
+                // ->schema([
+                //     Select::make('authors')
+                //         ->label('Co Authors')
+                //         ->multiple()
+                //         ->relationship('authors', 'name'),
+                // ])->columnSpan(1),
                 ]),
 
             ])->columns(3);
@@ -165,7 +168,7 @@ class PostResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            AuthorsRelationManager::class,
         ];
     }
 

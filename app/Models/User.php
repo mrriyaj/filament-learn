@@ -48,6 +48,6 @@ class User extends Authenticatable
 
     function posts()
     {
-        return $this->belongsToMany(Post::class, 'post_user')->withTimestamps();
+        return $this->belongsToMany(Post::class, 'post_user')->withPivot(['order'])->withTimestamps();
     }
 }
