@@ -6,6 +6,8 @@ use App\Filament\Resources\CategoryResource\RelationManagers\PostsRelationManage
 use App\Filament\Resources\PostResource\RelationManagers\AuthorsRelationManager;
 use App\Filament\Resources\PostResource\Pages;
 use App\Filament\Resources\PostResource\RelationManagers;
+use App\Filament\Resources\PostResource\RelationManagers\CommentsRelationManager;
+use App\Models\Comment;
 use App\Models\Post;
 use Doctrine\DBAL\Platforms\MySQL\DefaultTableOptions;
 use Faker\Core\Color;
@@ -179,6 +181,7 @@ class PostResource extends Resource
     {
         return [
             AuthorsRelationManager::class,
+            CommentsRelationManager::class,
         ];
     }
 
