@@ -17,6 +17,8 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Filament\Widgets\TestWidget;
+use App\Filament\Widgets\TestChartWidget;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -39,6 +41,8 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
+                TestWidget::class,
+                TestChartWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
