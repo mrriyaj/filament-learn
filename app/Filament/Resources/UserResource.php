@@ -8,6 +8,7 @@ use App\Models\User;
 use Faker\Provider\ar_EG\Text;
 use App\Filament\Exports\UserExporter;
 use Filament\Forms;
+use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Form;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
@@ -78,6 +79,7 @@ class UserResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+                Tables\Actions\ExportBulkAction::make()->exporter(UserExporter::class),
             ]);
     }
 
