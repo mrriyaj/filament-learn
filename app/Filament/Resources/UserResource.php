@@ -6,6 +6,7 @@ use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use Faker\Provider\ar_EG\Text;
+use App\Filament\Exports\UserExporter;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Components\TextInput;
@@ -69,6 +70,9 @@ class UserResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+            ])
+            ->headerActions([
+                Tables\Actions\ExportAction::make()->exporter(UserExporter::class),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
