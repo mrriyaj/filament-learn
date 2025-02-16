@@ -37,6 +37,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
 use PharIo\Manifest\Author;
 
 class PostResource extends Resource
@@ -44,6 +45,8 @@ class PostResource extends Resource
     protected static ?string $model = Post::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {
@@ -56,7 +59,14 @@ class PostResource extends Resource
                         TextInput::make('title')
                             ->label('Title')
                             ->required()
-                            ->placeholder('Post Title'),
+                            ->placeholder('Post Title')
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function (string $operation, string $state, Forms\Set $set) {
+                                if ($operation === 'edit') {
+                                    return;
+                                }
+                                $set('slug', Str::slug($state));
+                            }),
                         TextInput::make('slug')
                             ->label('Slug')
                             ->required()
@@ -93,9 +103,12 @@ class PostResource extends Resource
                             TagsInput::make('tags')
                                 ->label('Tags')
                                 ->placeholder('tag1, tag2, tag3'),
-                            Checkbox::make('published')
-                                ->required()
-                                ->label('Published'),
+                            Select::make('published')
+                                ->label('Status')
+                                ->options([
+                                    true => 'Published',
+                                    false => 'Draft',
+                                ]),
                         ])->columnSpan(1),
 
                     // Section::make(fn($record) => $record ? ($record->exists ? 'Edit Author Information' : 'View Author Information') : 'Add Author Information')
