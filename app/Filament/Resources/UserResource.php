@@ -37,15 +37,21 @@ class UserResource extends Resource
                 TextInput::make('email')
                     ->label('Email')
                     ->required()
-                    ->unique()
+                    ->unique(ignoreRecord: true)
                     ->email()
                     ->placeholder('Email'),
                 TextInput::make('password')
                     ->label('Password')
                     ->autocomplete('new-password')
-                    ->required()
                     ->password()
-                    ->placeholder('Password'),
+                    ->placeholder('Password')
+                    ->dehydrateStateUsing(fn ($state) => !empty($state) ? bcrypt($state) : null)
+                    ->required(fn ($livewire) => $livewire instanceof \Filament\Resources\Pages\CreateRecord),
+                Forms\Components\Select::make('roles')
+                    ->relationship('roles', 'name')
+                    ->multiple()
+                    ->preload()
+                    ->searchable(),
             ]);
     }
 
