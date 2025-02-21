@@ -111,14 +111,14 @@ class PostResource extends Resource
                                 ]),
                         ])->columnSpan(1),
 
-                    // Section::make(fn($record) => $record ? ($record->exists ? 'Edit Author Information' : 'View Author Information') : 'Add Author Information')
-                    // ->description(fn($record) => $record ? ($record->exists ? 'Edit the author information of your post' : 'View the author information of your post') : 'Add some author information to your post')
-                    // ->schema([
-                    //     Select::make('authors')
-                    //         ->label('Co Authors')
-                    //         ->multiple()
-                    //         ->relationship('authors', 'name'),
-                    // ])->columnSpan(1),
+                    Section::make(fn($record) => $record ? ($record->exists ? 'Edit Author Information' : 'View Author Information') : 'Add Author Information')
+                        ->description(fn($record) => $record ? ($record->exists ? 'Edit the author information of your post' : 'View the author information of your post') : 'Add some author information to your post')
+                        ->schema([
+                            Select::make('authors')
+                                ->label('Co Authors')
+                                ->multiple()
+                                ->relationship('authors', 'name'),
+                        ])->columnSpan(1),
                 ]),
 
             ])->columns(3);
